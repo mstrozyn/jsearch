@@ -13,9 +13,7 @@ Compile:
 ```
 make
 ```
-## Prepare the database
-The "jsearch" command searches for the ".json" and ".json=bak" files on the specified path and then searches them for the modules version and reports to the specified server.
-json files processing is done using https://github.com/nlohmann/json/ header only library for json parsing.
+The "jsearch" command searches for the ".json" and ".json-bak" files on the specified path and then searches them for the modules version and reports to the specified server. json files processing is done using https://github.com/nlohmann/json/ header only library for json parsing.
 ## Run the program:
 ```
 cd out
