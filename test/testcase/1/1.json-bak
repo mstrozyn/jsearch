@@ -1,0 +1,15 @@
+{
+    "modules":[
+        {
+            "module_name":"module1",
+            "feature_version":"v2.0",
+            "size":"10MB"
+        },
+        {
+            "module_name":"module2",
+            "feature_version":"v2.3",
+            "size":"5MB"
+        }
+    ]
+}
+
