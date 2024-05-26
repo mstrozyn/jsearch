@@ -9,12 +9,21 @@
 
 #include "utils.h"
 
-void search_for_files(const std::string& path, const std::string& extension, std::list<std::string>& files) {
+namespace utils {
+
+int search_for_files(const std::string& path, const std::string& extension, std::list<std::string>& files) {
+    if (path.empty() || !std::filesystem::exists(path)) {
+        std::cerr << "wrong path: " << path << std::endl;
+        return -1;
+    }
+
     for (auto const& dir_entry : std::filesystem::recursive_directory_iterator(path)) {
         if (!dir_entry.path().extension().compare(extension)) {
             files.push_back(dir_entry.path());
         }
     }
+
+    return 0;
 }
 
 // updates module version
@@ -56,27 +65,33 @@ void search_for_versions(const std::list<std::string>& files, nlohmann::json& re
             for (nlohmann::json::const_iterator it = modules.begin(); it != modules.end(); ++it) {
                 update_version(*it, result);
             }
-        } catch ( ... ) {
+        } catch (...) {
         }
     }
 }
 
 int send_to_server(const std::string& address, const std::string& port, const std::string& message) {
-    if (address.empty() || port.empty()) {
-        std::cerr << "wrong server address:port" << std::endl;
-        return -1;
-    }
-
-    if (message.empty()) {
-        std::cerr << "no server message to send" << std::endl;
-        return -1;
-    }
-
     struct sockaddr_in server;
     memset(&server, 0, sizeof(server));
+
     server.sin_family = AF_INET;
-    server.sin_port = htons(std::stoul(port));
-    server.sin_addr.s_addr = inet_addr(address.c_str());
+
+    if (address.empty() || (inet_aton(address.c_str(), &server.sin_addr) == 0)) {
+        std::cerr << "wrong address: " << address << std::endl;
+        return -1;
+    }
+
+    try {
+        unsigned long port_number = std::stoul(port);
+        if (port_number > 65535) {
+            std::cerr << "port number out of range: " << port_number << std::endl;
+            return -1;
+        }
+        server.sin_port = htons(port_number);
+    } catch(...) {
+        std::cerr << "wrong port: " << port << std::endl;
+        return -1;
+    }
 
     int client = socket(AF_INET, SOCK_DGRAM, 0);
     if (client < 0 ) {
@@ -84,11 +99,12 @@ int send_to_server(const std::string& address, const std::string& port, const st
         return -1;
     }
 
-    int result = sendto(client, message.c_str(), strlen(message.c_str()), 0, (const struct sockaddr *)&server, sizeof(server));
-    if (result < 0 ) {
-        std::cerr << "sending to server failed" << std::endl;
-    }
+    int result = sendto(client, message.c_str(), strlen(message.c_str()),
+                        0, (const struct sockaddr *)&server, sizeof(server));
 
     close(client);
+
     return result;
 }
+
+} // utils

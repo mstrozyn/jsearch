@@ -3,14 +3,17 @@
 
 #include "json.hpp"
 
+namespace utils {
+
 /**
  * searches for files
  *
  * @param[in] path path to check
  * @param[in] extension file extension to check
  * @param[out] files resulting list of files
+ * @return non negative value on success
  */
-void search_for_files(const std::string& path, const std::string& extension, std::list<std::string>& files);
+int search_for_files(const std::string& path, const std::string& extension, std::list<std::string>& files);
 
 /**
  * searches for modules versions
@@ -29,3 +32,5 @@ void search_for_versions(const std::list<std::string>& files, nlohmann::json& re
  * @return non negative value on success
  */
 int send_to_server(const std::string& address, const std::string& port, const std::string& message);
+
+} // utils
