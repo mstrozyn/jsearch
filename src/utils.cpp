@@ -11,22 +11,6 @@
 
 namespace utils {
 
-int search_for_files(const std::string& path, const std::string& extension, std::list<std::string>& files) {
-    if (path.empty() || !std::filesystem::exists(path)) {
-        std::cerr << "wrong path: " << path << std::endl;
-        return -1;
-    }
-
-    for (auto const& dir_entry : std::filesystem::recursive_directory_iterator(path)) {
-        if (!dir_entry.path().extension().compare(extension)) {
-            files.push_back(dir_entry.path());
-        }
-    }
-
-    return 0;
-}
-
-// updates module version
 static void update_version(const nlohmann::json& module, nlohmann::json& result) {
     const std::string MODULE_NAME("module_name");
     const std::string FEATURE_VERSION("feature_version");
@@ -40,6 +24,7 @@ static void update_version(const nlohmann::json& module, nlohmann::json& result)
         }
 
         if (std::stof(new_version.substr(1)) > std::stof(current_version.substr(1))) {
+            // record module and version
             result[module[MODULE_NAME]] = new_version;
         }
     }
@@ -66,8 +51,24 @@ void search_for_versions(const std::list<std::string>& files, nlohmann::json& re
                 update_version(*it, result);
             }
         } catch (...) {
+            // do nothing, just move on to the next item
         }
     }
+}
+
+int search_for_files(const std::string& path, const std::string& extension, std::list<std::string>& files) {
+    if (path.empty() || !std::filesystem::exists(path)) {
+        std::cerr << "wrong path: " << path << std::endl;
+        return -1;
+    }
+
+    for (auto const& dir_entry : std::filesystem::recursive_directory_iterator(path)) {
+        if (!dir_entry.path().extension().compare(extension)) {
+            files.push_back(dir_entry.path());
+        }
+    }
+
+    return 0;
 }
 
 int send_to_server(const std::string& address, const std::string& port, const std::string& message) {
@@ -88,7 +89,7 @@ int send_to_server(const std::string& address, const std::string& port, const st
             return -1;
         }
         server.sin_port = htons(port_number);
-    } catch(...) {
+    } catch (...) {
         std::cerr << "wrong port: " << port << std::endl;
         return -1;
     }
@@ -98,7 +99,6 @@ int send_to_server(const std::string& address, const std::string& port, const st
         std::cerr << "socket creation failed" << std::endl;
         return -1;
     }
-
     int result = sendto(client, message.c_str(), strlen(message.c_str()),
                         0, (const struct sockaddr *)&server, sizeof(server));
 

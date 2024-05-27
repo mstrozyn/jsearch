@@ -4,20 +4,22 @@
 
 int main(int argc, char** argv) {
     if (argc != 3) {
-        std::cerr << "too few program arguments" << std::endl;
-        std::cerr << "usage: 'jsearch /search/path server_address:server_port'" << std::endl;
+        std::cerr << "wrong program arguments" << std::endl;
+        std::cerr << "usage: jsearch /search/path server_address:server_port" << std::endl;
         return EXIT_FAILURE;
     }
 
     // search for files with the given extensions
     std::list<std::string> files;
     std::string search_path(argv[1]);
-    if (utils::search_for_files(search_path, ".json", files) < 0) {
-        std::cerr << "searching for .json files failed" << std::endl;
+    std::string json_etension(".json");
+    std::string jsonbak_etension(".json-bak");
+    if (utils::search_for_files(search_path, json_etension, files) < 0) {
+        std::cerr << "searching for " << json_etension << " files failed" << std::endl;
         return EXIT_FAILURE;
     }
-    if (utils::search_for_files(search_path, ".json-bak", files) < 0) {
-        std::cerr << "searching for .json-bak files failed" << std::endl;
+    if (utils::search_for_files(search_path, jsonbak_etension, files) < 0) {
+        std::cerr << "searching for " << jsonbak_etension << " files failed" << std::endl;
         return EXIT_FAILURE;
     }
     if (files.empty()) {
