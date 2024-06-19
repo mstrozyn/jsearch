@@ -12,14 +12,14 @@ int main(int argc, char** argv) {
     // search for files with the given extensions
     std::list<std::string> files;
     std::string search_path(argv[1]);
-    std::string json_etension(".json");
-    std::string jsonbak_etension(".json-bak");
-    if (utils::search_for_files(search_path, json_etension, files) < 0) {
-        std::cerr << "searching for " << json_etension << " files failed" << std::endl;
+    std::string json_extension(".json");
+    std::string jsonbak_extension(".json-bak");
+    if (utils::search_for_files(search_path, json_extension, files) < 0) {
+        std::cerr << "searching for " << json_extension << " files failed" << std::endl;
         return EXIT_FAILURE;
     }
-    if (utils::search_for_files(search_path, jsonbak_etension, files) < 0) {
-        std::cerr << "searching for " << jsonbak_etension << " files failed" << std::endl;
+    if (utils::search_for_files(search_path, jsonbak_extension, files) < 0) {
+        std::cerr << "searching for " << jsonbak_extension << " files failed" << std::endl;
         return EXIT_FAILURE;
     }
     if (files.empty()) {
