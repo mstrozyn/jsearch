@@ -58,6 +58,8 @@ if __name__ == "__main__":
             process = subprocess.Popen([args.executable, test.data, server.getsockname()[0] + ":" + str(server.getsockname()[1])])
             process.wait()
 
+            time.sleep(0.01)
+
             # check received data
             if server_data == test.result:
                 print("TestCase " + test.name + " OK")
